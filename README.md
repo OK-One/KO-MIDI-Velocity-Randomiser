@@ -9,6 +9,11 @@ Parameters (all whole numbers, 0-127, default 5):
   Equal values give the same deviation at every velocity.
 - **Bypass**: events pass through unchanged.
 
+The plug-in window (Windows) shows these three controls plus a live readout like the JSFX debug display:
+notes processed, last input and output velocity, allowed deviation for the last note, and the smallest and
+largest deviation seen. The readout values reach the window as read-only parameters, so they only update in
+hosts that pass a plug-in's output parameter changes back to its controller.
+
 Output velocity is always a whole number from 1 to 127 for any incoming velocity of 1 or more.
 
 MIDI controllers (sustain pedal, mod wheel, pitch bend, aftertouch) are passed through. VST 3 hosts only
@@ -33,3 +38,4 @@ all 16 channels and re-emits each change as a MIDI controller output event.
     cd tests
     g++ -std=c++17 -I../source test_velocity.cpp -o test_velocity && ./test_velocity
     g++ -std=c++17 -I../source test_midi.cpp -o test_midi && ./test_midi
+    g++ -std=c++17 -I../source test_debug.cpp -o test_debug && ./test_debug

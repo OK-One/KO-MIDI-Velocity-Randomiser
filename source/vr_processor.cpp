@@ -160,7 +160,15 @@ tresult PLUGIN_API Processor::process (Vst::ProcessData& data)
 			data.outputEvents->addEvent (controllerEvents[nextController++]);
 
 		if (!bypass && e.type == Vst::Event::kNoteOnEvent)
-			e.noteOn.velocity = randomiser.apply (e.noteOn.velocity, devHigh, devLow);
+		{
+			VelocityRandomiser::Details details;
+			e.noteOn.velocity = randomiser.apply (e.noteOn.velocity, devHigh, devLow, &details);
+			if (details.valid)
+			{
+				stats.record (details.inVelocity, details.outVelocity, details.allowedDeviation);
+				statsChanged = true;
+			}
+		}
 
 		data.outputEvents->addEvent (e);
 	}
@@ -168,7 +176,37 @@ tresult PLUGIN_API Processor::process (Vst::ProcessData& data)
 	while (nextController < numControllerEvents)
 		data.outputEvents->addEvent (controllerEvents[nextController++]);
 
+	// 3) Tell the on-screen display about any notes processed in this block.
+	if (statsChanged)
+	{
+		sendDebugValues (data);
+		statsChanged = false;
+	}
+
 	return kResultOk;
+}
+
+//------------------------------------------------------------------------
+void Processor::sendDebugValues (Vst::ProcessData& data)
+{
+	if (!data.outputParameterChanges)
+		return;
+
+	auto send = [&data] (Vst::ParamID id, double value) {
+		int32 queueIndex = 0;
+		if (Vst::IParamValueQueue* queue = data.outputParameterChanges->addParameterData (id, queueIndex))
+		{
+			int32 pointIndex = 0;
+			queue->addPoint (0, value, pointIndex);
+		}
+	};
+
+	send (kParamDbgCountId, encodeCount (stats.count ()));
+	send (kParamDbgInId, encodeVelocity (stats.lastInput ()));
+	send (kParamDbgOutId, encodeVelocity (stats.lastOutput ()));
+	send (kParamDbgAllowedId, encodeAllowed (stats.lastAllowedDeviation ()));
+	send (kParamDbgMinDevId, encodeDeviation (stats.smallestDeviation ()));
+	send (kParamDbgMaxDevId, encodeDeviation (stats.largestDeviation ()));
 }
 
 //------------------------------------------------------------------------

@@ -12,7 +12,10 @@ if(NOT vst3sdk_SOURCE_DIR)
     message(FATAL_ERROR "Please set vst3sdk_SOURCE_DIR to your VST 3 SDK folder.")
 endif()
 
-# This plug-in has no custom editor, so VSTGUI is not needed (the host shows its generic UI).
+# Build only this plug-in: skip Steinberg's example plug-ins and hosting examples, and VSTGUI
+# (the editor is a small native Windows window, so VSTGUI is not needed).
+set(SMTG_ENABLE_VST3_PLUGIN_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(SMTG_ENABLE_VST3_HOSTING_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SMTG_ENABLE_VSTGUI_SUPPORT OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(${vst3sdk_SOURCE_DIR} ${PROJECT_BINARY_DIR}/vst3sdk)
@@ -23,6 +26,9 @@ smtg_add_vst3plugin(VelocityRandomiser
     source/vr_cids.h
     source/vr_velocity.h
     source/vr_midi.h
+    source/vr_debug.h
+    source/vr_editor.h
+    source/vr_editor.cpp
     source/vr_processor.h
     source/vr_processor.cpp
     source/vr_controller.h
@@ -36,6 +42,10 @@ target_link_libraries(VelocityRandomiser
 )
 
 smtg_target_configure_version_file(VelocityRandomiser)
+
+if(SMTG_WIN)
+    target_link_libraries(VelocityRandomiser PRIVATE comctl32)
+endif()
 
 if(SMTG_WIN)
     # Optional: a resource file gives the DLL its Windows "Details" properties. Generate a

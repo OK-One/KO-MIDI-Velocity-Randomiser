@@ -1,7 +1,8 @@
 #pragma once
 
-#include "public.sdk/source/vst/vstaudioeffect.h"
 #include "pluginterfaces/vst/ivstevents.h"
+#include "public.sdk/source/vst/vstaudioeffect.h"
+#include "vr_debug.h"
 #include "vr_midi.h"
 #include "vr_velocity.h"
 
@@ -30,6 +31,11 @@ private:
 	bool bypass = false;
 
 	VelocityRandomiser randomiser;
+
+	// Statistics published to the on-screen display (as read-only parameters).
+	DebugStats stats;
+	bool statsChanged = false;
+	void sendDebugValues (Steinberg::Vst::ProcessData& data);
 
 	// Scratch space for MIDI controller events (sustain pedal etc.) gathered from the
 	// hidden MIDI parameters during one process() call. Fixed size: no allocation on the

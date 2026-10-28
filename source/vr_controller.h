@@ -15,6 +15,7 @@ public:
 
 	Steinberg::tresult PLUGIN_API initialize (Steinberg::FUnknown* context) SMTG_OVERRIDE;
 	Steinberg::tresult PLUGIN_API setComponentState (Steinberg::IBStream* state) SMTG_OVERRIDE;
+	Steinberg::IPlugView* PLUGIN_API createView (Steinberg::FIDString name) SMTG_OVERRIDE;
 
 	// IMidiMapping: tells the host which parameter receives each MIDI controller, so the
 	// host will pass sustain pedal, mod wheel, pitch bend etc. to the plug-in.

@@ -15,7 +15,15 @@ enum ParamIds : Steinberg::Vst::ParamID
 {
 	kParamDevHighId = 100, // max deviation at velocity 127 (0-127)
 	kParamDevLowId = 101,  // max deviation at velocity 1 (0-127)
-	kParamBypassId = 102   // bypass (0 = processing, 1 = bypassed)
+	kParamBypassId = 102,  // bypass (0 = processing, 1 = bypassed)
+
+	// Read-only values the processor sends to the on-screen display
+	kParamDbgCountId = 110,   // notes processed
+	kParamDbgInId = 111,      // last input velocity
+	kParamDbgOutId = 112,     // last output velocity
+	kParamDbgAllowedId = 113, // allowed deviation for the last note
+	kParamDbgMinDevId = 114,  // smallest deviation seen
+	kParamDbgMaxDevId = 115   // largest deviation seen
 };
 
 } // namespace VelRand

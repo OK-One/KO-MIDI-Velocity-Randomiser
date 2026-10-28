@@ -1,5 +1,6 @@
 #include "vr_controller.h"
 #include "vr_cids.h"
+#include "vr_editor.h"
 #include "vr_midi.h"
 
 #include "base/source/fstreamer.h"
@@ -7,6 +8,7 @@
 #include "public.sdk/source/vst/vstparameters.h"
 
 #include <cstdio>
+#include <cstring>
 
 using namespace Steinberg;
 
@@ -33,6 +35,15 @@ tresult PLUGIN_API Controller::initialize (FUnknown* context)
 	                         Vst::ParameterInfo::kCanAutomate | Vst::ParameterInfo::kIsBypass,
 	                         kParamBypassId);
 
+	// Read-only values published by the processor for the on-screen display.
+	const int32 readOnly = Vst::ParameterInfo::kIsReadOnly;
+	parameters.addParameter (STR16 ("Debug: Notes Processed"), nullptr, 0, 0, readOnly, kParamDbgCountId);
+	parameters.addParameter (STR16 ("Debug: Last Input Velocity"), nullptr, 0, 0, readOnly, kParamDbgInId);
+	parameters.addParameter (STR16 ("Debug: Last Output Velocity"), nullptr, 0, 0, readOnly, kParamDbgOutId);
+	parameters.addParameter (STR16 ("Debug: Allowed Deviation"), nullptr, 0, 0, readOnly, kParamDbgAllowedId);
+	parameters.addParameter (STR16 ("Debug: Smallest Deviation"), nullptr, 0, 0.5, readOnly, kParamDbgMinDevId);
+	parameters.addParameter (STR16 ("Debug: Largest Deviation"), nullptr, 0, 0.5, readOnly, kParamDbgMaxDevId);
+
 	// Hidden parameters that carry MIDI controllers (sustain pedal, mod wheel, pitch bend,
 	// aftertouch...) for all 16 channels. The host fills them via getMidiControllerAssignment()
 	// and the processor sends each change on as a MIDI controller event.
@@ -53,6 +64,16 @@ tresult PLUGIN_API Controller::initialize (FUnknown* context)
 	}
 
 	return kResultTrue;
+}
+
+//------------------------------------------------------------------------
+IPlugView* PLUGIN_API Controller::createView (FIDString name)
+{
+	// Our own window: three controls plus the debug readout. Hosts show it instead of
+	// their generic parameter list (which would otherwise list every hidden MIDI parameter).
+	if (name && std::strcmp (name, Vst::ViewType::kEditor) == 0)
+		return new Editor (this);
+	return nullptr;
 }
 
 //------------------------------------------------------------------------
