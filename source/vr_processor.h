@@ -1,6 +1,7 @@
 #pragma once
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
+#include "vr_midi.h"
 #include "vr_velocity.h"
 
 namespace VelRand {
@@ -28,6 +29,12 @@ private:
 	bool bypass = false;
 
 	VelocityRandomiser randomiser;
+
+	// Scratch space for MIDI controller events (sustain pedal etc.) gathered from the
+	// hidden MIDI parameters during one process() call. Fixed size: no allocation on the
+	// audio thread. Anything beyond this many in one block is dropped.
+	static constexpr Steinberg::int32 kMaxControllerEvents = 2048;
+	Steinberg::Vst::Event controllerEvents[kMaxControllerEvents];
 };
 
 } // namespace VelRand

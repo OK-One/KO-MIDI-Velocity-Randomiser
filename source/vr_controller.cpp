@@ -1,8 +1,12 @@
 #include "vr_controller.h"
 #include "vr_cids.h"
+#include "vr_midi.h"
 
 #include "base/source/fstreamer.h"
+#include "pluginterfaces/base/ustring.h"
 #include "public.sdk/source/vst/vstparameters.h"
+
+#include <cstdio>
 
 using namespace Steinberg;
 
@@ -29,6 +33,38 @@ tresult PLUGIN_API Controller::initialize (FUnknown* context)
 	                         Vst::ParameterInfo::kCanAutomate | Vst::ParameterInfo::kIsBypass,
 	                         kParamBypassId);
 
+	// Hidden parameters that carry MIDI controllers (sustain pedal, mod wheel, pitch bend,
+	// aftertouch...) for all 16 channels. The host fills them via getMidiControllerAssignment()
+	// and the processor sends each change on as a MIDI controller event.
+	for (int ch = 0; ch < kNumMidiChannels; ++ch)
+	{
+		for (int ctrl = 0; ctrl < kNumMidiControllers; ++ctrl)
+		{
+			char ascii[48];
+			std::snprintf (ascii, sizeof (ascii), "MIDI Ch %d Controller %d", ch + 1, ctrl);
+			UString128 title;
+			title.fromAscii (ascii);
+
+			const double defaultNormalised = (ctrl == kControllerPitchBend) ? 0.5 : 0.0;
+			parameters.addParameter (new Vst::Parameter (
+			    title, midiParamId (ch, ctrl), nullptr, defaultNormalised, 0,
+			    Vst::ParameterInfo::kIsHidden | Vst::ParameterInfo::kCanAutomate));
+		}
+	}
+
+	return kResultTrue;
+}
+
+//------------------------------------------------------------------------
+tresult PLUGIN_API Controller::getMidiControllerAssignment (int32 busIndex, int16 channel,
+                                                            Vst::CtrlNumber midiControllerNumber,
+                                                            Vst::ParamID& id)
+{
+	if (busIndex != 0 || channel < 0 || channel >= kNumMidiChannels || midiControllerNumber < 0 ||
+	    midiControllerNumber >= kNumMidiControllers)
+		return kResultFalse;
+
+	id = midiParamId (channel, midiControllerNumber);
 	return kResultTrue;
 }
 
