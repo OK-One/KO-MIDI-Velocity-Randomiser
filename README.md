@@ -11,6 +11,10 @@ Parameters (all whole numbers, 0-127, default 5):
 
 Output velocity is always a whole number from 1 to 127 for any incoming velocity of 1 or more.
 
+MIDI controllers (sustain pedal, mod wheel, pitch bend, aftertouch) are passed through. VST 3 hosts only
+deliver these to a plug-in through MIDI-mapped parameters, so the plug-in exposes hidden parameters for
+all 16 channels and re-emits each change as a MIDI controller output event.
+
 ## Build (Windows, 64-bit)
 1. Install Visual Studio 2022 (C++ desktop workload) and CMake; get the VST 3 SDK (with submodules).
 2. In this folder:
@@ -26,4 +30,6 @@ Output velocity is always a whole number from 1 to 127 for any incoming velocity
 - Optional: add `resource/win32resource.rc` (see CMakeLists.txt) and code-sign the plug-in.
 
 ## Test the maths without the SDK
-    cd tests && g++ -std=c++17 -I../source test_velocity.cpp -o test_velocity && ./test_velocity
+    cd tests
+    g++ -std=c++17 -I../source test_velocity.cpp -o test_velocity && ./test_velocity
+    g++ -std=c++17 -I../source test_midi.cpp -o test_midi && ./test_midi

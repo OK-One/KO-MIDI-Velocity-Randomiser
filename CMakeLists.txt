@@ -22,6 +22,7 @@ smtg_add_vst3plugin(VelocityRandomiser
     source/version.h
     source/vr_cids.h
     source/vr_velocity.h
+    source/vr_midi.h
     source/vr_processor.h
     source/vr_processor.cpp
     source/vr_controller.h
