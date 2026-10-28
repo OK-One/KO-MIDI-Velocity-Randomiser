@@ -1,6 +1,7 @@
 #pragma once
 
 #include "public.sdk/source/vst/vstaudioeffect.h"
+#include "pluginterfaces/vst/ivstevents.h"
 #include "vr_midi.h"
 #include "vr_velocity.h"
 
