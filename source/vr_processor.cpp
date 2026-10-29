@@ -205,6 +205,7 @@ void Processor::sendDebugValues (Vst::ProcessData& data)
 	send (kParamDbgInId, encodeVelocity (stats.lastInput ()));
 	send (kParamDbgOutId, encodeVelocity (stats.lastOutput ()));
 	send (kParamDbgAllowedId, encodeAllowed (stats.lastAllowedDeviation ()));
+	send (kParamDbgLastDevId, encodeDeviation (stats.lastDeviation ()));
 	send (kParamDbgMinDevId, encodeDeviation (stats.smallestDeviation ()));
 	send (kParamDbgMaxDevId, encodeDeviation (stats.largestDeviation ()));
 }

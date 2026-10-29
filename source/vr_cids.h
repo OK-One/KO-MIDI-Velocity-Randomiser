@@ -23,7 +23,8 @@ enum ParamIds : Steinberg::Vst::ParamID
 	kParamDbgOutId = 112,     // last output velocity
 	kParamDbgAllowedId = 113, // allowed deviation for the last note
 	kParamDbgMinDevId = 114,  // smallest deviation seen
-	kParamDbgMaxDevId = 115   // largest deviation seen
+	kParamDbgMaxDevId = 115,  // largest deviation seen
+	kParamDbgLastDevId = 116  // deviation applied to the last note (output - input)
 };
 
 } // namespace VelRand

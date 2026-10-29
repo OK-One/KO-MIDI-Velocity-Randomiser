@@ -33,7 +33,7 @@ namespace VelRand {
 namespace {
 
 constexpr int kEditorWidth = 450;
-constexpr int kEditorHeight = 280;
+constexpr int kEditorHeight = 300;
 constexpr UINT_PTR kTimerId = 1;
 constexpr UINT kTimerMs = 50;
 
@@ -81,7 +81,7 @@ struct Editor::Impl
 	HWND valueHigh = nullptr;
 	HWND valueLow = nullptr;
 	HWND bypassBox = nullptr;
-	HWND debugLine[5] = {};
+	HWND debugLine[6] = {};
 
 	static LRESULT CALLBACK windowProc (HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -237,7 +237,7 @@ void Editor::Impl::createControls ()
 	                             inst, nullptr);
 	SendMessageW (bypassBox, WM_SETFONT, reinterpret_cast<WPARAM> (font), TRUE);
 
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < 6; ++i)
 		debugLine[i] = makeLabel (L"", 10, 170 + i * 20, 430, 18);
 
 	refresh ();
@@ -315,8 +315,9 @@ void Editor::Impl::refresh ()
 	{
 		setTextIfChanged (debugLine[1], L"Last input velocity: -");
 		setTextIfChanged (debugLine[2], L"Last output velocity: -");
-		setTextIfChanged (debugLine[3], L"Allowed deviation for last note: -");
-		setTextIfChanged (debugLine[4], L"Smallest / largest deviation seen: -");
+		setTextIfChanged (debugLine[3], L"Deviation applied to last note: -");
+		setTextIfChanged (debugLine[4], L"Allowed deviation for last note: -");
+		setTextIfChanged (debugLine[5], L"Smallest / largest deviation seen: -");
 		return;
 	}
 
@@ -328,14 +329,18 @@ void Editor::Impl::refresh ()
 	               decodeVelocity (controller->getParamNormalized (kParamDbgOutId)));
 	setTextIfChanged (debugLine[2], text);
 
+	std::swprintf (text, 160, L"Deviation applied to last note: %+d",
+	               decodeDeviation (controller->getParamNormalized (kParamDbgLastDevId)));
+	setTextIfChanged (debugLine[3], text);
+
 	std::swprintf (text, 160, L"Allowed deviation for last note: +/- %.2f",
 	               decodeAllowed (controller->getParamNormalized (kParamDbgAllowedId)));
-	setTextIfChanged (debugLine[3], text);
+	setTextIfChanged (debugLine[4], text);
 
 	std::swprintf (text, 160, L"Smallest / largest deviation seen: %d / %d",
 	               decodeDeviation (controller->getParamNormalized (kParamDbgMinDevId)),
 	               decodeDeviation (controller->getParamNormalized (kParamDbgMaxDevId)));
-	setTextIfChanged (debugLine[4], text);
+	setTextIfChanged (debugLine[5], text);
 }
 
 #else // not Windows
@@ -354,7 +359,7 @@ ViewRect* initialRect ()
 #if defined(_WIN32)
 	static ViewRect rect (0, 0, kEditorWidth, kEditorHeight);
 #else
-	static ViewRect rect (0, 0, 450, 280);
+	static ViewRect rect (0, 0, 450, 300);
 #endif
 	return &rect;
 }

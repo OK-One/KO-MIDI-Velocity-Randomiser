@@ -27,8 +27,15 @@ int main ()
 	s.record (64, 58, 5.0);   // -6
 	s.record (100, 100, 0.0); // 0
 	CHECK (s.count () == 3, "count");
+	const int minBefore = s.smallestDeviation (), maxBefore = s.largestDeviation ();
 	CHECK (s.lastInput () == 100 && s.lastOutput () == 100, "last in/out");
-	CHECK (s.smallestDeviation () == -6 && s.largestDeviation () == 6, "min/max");
+	CHECK (s.lastDeviation () == 0, "last deviation zero");
+	s.record (50, 42, 8.0);
+	CHECK (s.lastDeviation () == -8, "last deviation -8");
+	s.record (50, 57, 8.0);
+	CHECK (s.lastDeviation () == 7, "last deviation +7");
+	CHECK (decodeDeviation (encodeDeviation (s.lastDeviation ())) == 7, "last deviation round trip");
+	CHECK (minBefore == -6 && maxBefore == 6, "min/max");
 
 	// apply() details agree with what it returns
 	VelocityRandomiser r (99);

@@ -56,6 +56,7 @@ public:
 	int lastInput () const { return lastIn; }
 	int lastOutput () const { return lastOut; }
 	double lastAllowedDeviation () const { return lastAllowed; }
+	int lastDeviation () const { return lastOut - lastIn; } // deviation applied to the last note
 	int smallestDeviation () const { return minDev; }
 	int largestDeviation () const { return maxDev; }
 

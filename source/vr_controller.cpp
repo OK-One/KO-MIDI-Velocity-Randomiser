@@ -41,6 +41,7 @@ tresult PLUGIN_API Controller::initialize (FUnknown* context)
 	parameters.addParameter (STR16 ("Debug: Last Input Velocity"), nullptr, 0, 0, readOnly, kParamDbgInId);
 	parameters.addParameter (STR16 ("Debug: Last Output Velocity"), nullptr, 0, 0, readOnly, kParamDbgOutId);
 	parameters.addParameter (STR16 ("Debug: Allowed Deviation"), nullptr, 0, 0, readOnly, kParamDbgAllowedId);
+	parameters.addParameter (STR16 ("Debug: Deviation Applied"), nullptr, 0, 0.5, readOnly, kParamDbgLastDevId);
 	parameters.addParameter (STR16 ("Debug: Smallest Deviation"), nullptr, 0, 0.5, readOnly, kParamDbgMinDevId);
 	parameters.addParameter (STR16 ("Debug: Largest Deviation"), nullptr, 0, 0.5, readOnly, kParamDbgMaxDevId);
 
